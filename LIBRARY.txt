@@ -1,0 +1,694 @@
+from tkinter import *
+import sqlite3
+from tkinter import messagebox
+from twilio.rest import Client
+from datetime import date
+from datetime import timedelta
+from datetime import datetime
+
+# from tkinter.ttk import *
+style = ('Calibri', 17)
+style_1 = ('Comic Sans MS', 13)
+
+login = Tk()
+login.title("LOG IN")
+login.configure(bg="white", )
+login.title("LIBRARY")
+login.iconbitmap("lib.ico")
+login.attributes('-fullscreen', True)
+issue = PhotoImage(file="crop1.png")
+photoimage = issue.subsample(6, 6)
+# LOGIN---------------------------------------------------------------------------
+# ALL FRAMING
+l_head = Label(login, text='Welcome....', font=style, bg="white", fg="black")
+l_head.place(x=10, y=10)
+l_foot = Label(login, text='Key To Success....', font=style, bg="white", fg="black")
+l_foot.place(x=10, y=630)
+
+f1 = Frame(login, bg="brown", borderwidth=12)
+f1.pack(pady=50, fill="x", side=TOP)
+l1_1 = Label(f1, text=" ", bg="brown")
+l1_1.pack(padx=142)
+
+f2 = Frame(login, bg="brown", borderwidth=12)
+f2.pack(pady=50, fill="x", side=BOTTOM)
+l1_2 = Label(f2, text=" ", bg="brown")
+l1_2.pack(padx=142)
+
+f3 = Frame(login, background="brown")
+label = Label(f3, text="", bd=300, bg="white")
+label.pack(padx=5, pady=5)
+f3.pack(pady=3, padx=50, side=RIGHT)
+
+# ADDING IMAGE
+photo = PhotoImage(file="14.png")
+p1 = Label(image=photo, width=443, height=248)
+p1.pack(side=LEFT, padx=50)
+
+
+def reset():
+    e1.delete(0, END)
+    e2.delete(0, END)
+    e1.focus()
+
+
+def close_of(event):
+    login.destroy()
+
+
+def lib():
+    id = int(e1.get())
+    passw = int(e2.get())
+
+    if id != 123456789:
+        if passw != 123456789:
+            messagebox.showinfo("Error","WRONG ID AND PASSWORD")
+            e1.delete(0,END)
+            e2.delete(0,END)
+            e1.focus()
+    if id == 123456789:
+        if passw == 123456789:
+            login.destroy()
+            base = Tk()
+            base.title("LIBRARY")
+            base.iconbitmap("lib.ico")
+            base.attributes('-fullscreen', True)
+
+            op_style = ('Comic Sans MS', 15)
+            op_headings = ('Algerian', 25, "underline")
+            base.configure(bg="white")
+            header = Frame(base, bg="brown", borderwidth=14)
+            header.pack(pady=0, fill="x", side=TOP)
+            head_lab = Label(header, text="***Library Management***", bg="brown", font=op_style, fg="white")
+            head_lab.pack(padx=142)
+
+            side = Frame(base, background="brown")
+            side_label = Label(side, width=40, height=100, bg="white")
+            side_label.pack(padx=0, pady=0)
+            side.pack(pady=3, padx=3, side=LEFT)
+
+            op_frame = Frame(base, bg="white", borderwidth=10)
+            op_label = Label(op_frame, width=150, height=100, bg="white")
+            op_label.pack(padx=2, pady=2)
+            op_frame.pack(pady=10, padx=0, side=RIGHT)
+
+            # Issue Book------
+            def issue_book():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                def issue_details():
+                    book_num = e1_i_book.get()
+                    stud_name = e2_i_book.get()
+                    book_name = e3_i_book.get()
+                    issue_date = date.today()
+                    return_date = date.today() + timedelta(7)
+                    book_returned = "No"
+                    roll = e5_i_book.get()
+
+                    con = sqlite3.connect("Library.db")
+                    query = "insert into Book_Issue_Detail values({0},'{1}','{2}','{3}','{4}','{5}',{6})".format(
+                        book_num,
+                        stud_name,
+                        book_name,
+                        issue_date,
+                        return_date
+                        ,
+                        book_returned,
+                        roll)
+                    con.execute(query)
+                    con.commit()
+                    con.close()
+                    messagebox.showinfo("Done", "Book Issued.")
+
+                def clear():
+                    e1_i_book.delete(0, END)
+                    e2_i_book.delete(0, END)
+                    e3_i_book.delete(0, END)
+                    e5_i_book.delete(0, END)
+                    e1.focus()
+
+                head_i_label = Label(op_frame, text="Issue Book", font=op_headings, fg='black', bg="white")
+                head_i_label.place(x=30, y=50)
+
+                l1_i_book = Label(op_frame, text="BOOK NUMBER", font=style, bg="white", fg="black")
+                l1_i_book.place(x=30, y=130)
+                l2_i_book = Label(op_frame, text="STUDENT NAME", font=style, bg="white", fg="black")
+                l2_i_book.place(x=30, y=200)
+                l3_i_book = Label(op_frame, text="BOOK NAME", font=style, bg="white", fg="black")
+                l3_i_book.place(x=30, y=270)
+                l5_i_book = Label(op_frame, text="ROLL NUMBER", font=style, bg="white", fg="black")
+                l5_i_book.place(x=30, y=340)
+                l4_i_book = Label(op_frame, text="Issue Date", font=style, bg="white", fg="black")
+                l4_i_book.place(x=30, y=410)
+
+                l5_i_book = Label(op_frame, text=f"{date.today()}", font=style, bg="white", fg="black")
+                l5_i_book.place(x=270, y=410)
+
+                # ALL ENTRY
+                e1_i_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e1_i_book.place(x=250, y=130)
+                e1_i_book.focus()
+                e2_i_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e2_i_book.place(x=250, y=200)
+                e3_i_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e3_i_book.place(x=250, y=270)
+                e5_i_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e5_i_book.place(x=250, y=340)
+
+                # All Button
+                i_b1 = Button(op_frame, text="SAVE", font=style, bg="brown", fg="white", width=10,
+                              activebackground='white',
+                              command=issue_details)
+                i_b1.place(x=365, y=480)
+                c_b1 = Button(op_frame, text="CLEAR", font=style, bg="brown", fg="white", width=10,
+                              activebackground='white',
+                              command=clear)
+                c_b1.place(x=365, y=550)
+
+            # --------------
+
+            def close_of(event):
+                base.destroy()
+
+            # Return Book-----
+            def return_book():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                head_r_label = Label(op_frame, text="Return Book", font=op_headings, fg='black', bg="white")
+                head_r_label.place(x=30, y=50)
+
+                def confirm_return_book():
+                    b_num = e1_r_book.get()
+                    con = sqlite3.connect("Library.db")
+                    query = f"UPDATE Book_Issue_Detail SET Book_Returned = 'Yes' WHERE Book_Num = {b_num}"
+                    con.execute(query)
+                    con.commit()
+                    con.close()
+                    messagebox.showinfo("Done", "Book Returned")
+
+                def check_fine():
+                    b_num = e1_r_book.get()
+                    book_returning = date.today()
+
+                    con = sqlite3.connect("Library.db")
+                    query = f"select Return_Date from Book_Issue_Detail WHERE Book_Num = {b_num} "
+                    cur = con.cursor()
+                    cur.execute(query)
+                    data = cur.fetchone()
+                    my_date = datetime.strptime(data[0], "%Y-%m-%d").date()
+
+                    if my_date > book_returning:
+                        messagebox.showinfo("Fine", "No Fine.")
+
+                    else:
+                        days = book_returning - my_date
+                        con_days = days.days
+                        fine = con_days * 5
+                        messagebox.showinfo("Fine", f"You have {fine} Rs fine.")
+                        print("YOU HAVE ", fine, "Rs fine")
+
+                # All label
+                l1_r_book = Label(op_frame, text="BOOK NUMBER", font=style, bg="white", fg="black")
+                l1_r_book.place(x=30, y=130)
+
+                # ALL ENTRY
+                e1_r_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e1_r_book.place(x=250, y=130)
+                e1_r_book.focus()
+
+                # ALL BUTTONS
+                r_b1 = Button(op_frame, text="CHECK FINE", font=style, bg="brown", fg="white", width=10,
+                              activebackground='white',
+                              command=check_fine)
+                r_b1.place(x=365, y=270)
+                r_b1 = Button(op_frame, text="RETURN", font=style, bg="brown", fg="white", width=10,
+                              activebackground='white',
+                              command=confirm_return_book)
+                r_b1.place(x=365, y=340)
+
+            # --------------
+
+            # Add Student-----
+            def add_student():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                head_stud_label = Label(op_frame, text="ADD STUDENTS", font=op_headings, fg='black', bg="white")
+                head_stud_label.place(x=30, y=50)
+
+                def confirm_details():
+                    roll = e1_stud.get()
+                    name = e2_stud.get()
+                    sclass = e3_stud.get()
+                    email = e4_stud.get()
+                    phone = e5_stud.get()
+
+                    con = sqlite3.connect("Library.db")
+                    query = "insert into Student_Detail values({0},'{1}','{2}','{3}',{4})".format(roll, name, sclass,
+                                                                                                  email,
+                                                                                                  phone)
+                    con.execute(query)
+                    con.commit()
+                    con.close()
+                    messagebox.showinfo("Done", "Student Added")
+
+                    # All Label
+
+                def clear():
+                    e1_stud.delete(0, END)
+                    e2_stud.delete(0, END)
+                    e3_stud.delete(0, END)
+                    e4_stud.delete(0, END)
+                    e5_stud.delete(0, END)
+                    e1.focus()
+
+                l1_stud = Label(op_frame, text="ROLL", font=style, bg="white", fg="black")
+                l1_stud.place(x=30, y=130)
+                l2_stud = Label(op_frame, text="NAME", font=style, bg="white", fg="black")
+                l2_stud.place(x=30, y=200)
+                l3_stud = Label(op_frame, text="CLASS", font=style, bg="white", fg="black")
+                l3_stud.place(x=30, y=270)
+                l4_stud = Label(op_frame, text="EMAIL", font=style, bg="white", fg="black")
+                l4_stud.place(x=30, y=340)
+                l5_stud = Label(op_frame, text="PHONE NO.", font=style, bg="white", fg="black")
+                l5_stud.place(x=30, y=410)
+
+                # ALL ENTRY
+                e1_stud = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e1_stud.place(x=250, y=130)
+                e1_stud.focus()
+                e2_stud = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e2_stud.place(x=250, y=200)
+                e3_stud = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e3_stud.place(x=250, y=270)
+                e4_stud = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e4_stud.place(x=250, y=340)
+                e5_stud = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e5_stud.place(x=250, y=410)
+
+                # ALL BUTTON
+                b1_stud = Button(op_frame, text="SAVE", font=style, bg="brown", fg="white", width=10,
+                                 activebackground='white',
+                                 command=confirm_details)
+                b1_stud.place(x=365, y=480)
+                b1_stud = Button(op_frame, text="CLEAR", font=style, bg="brown", fg="white", width=10,
+                                 activebackground='white',
+                                 command=clear)
+                b1_stud.place(x=365, y=550)
+
+            # -------------
+            def remove_student():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                def confirm_remove_stud():
+                    roll = e1_stud_rem.get()
+
+                    con = sqlite3.connect("Library.db")
+                    cur = con.cursor()
+                    query = f"DELETE FROM Student_Detail WHERE Roll = {roll}"
+                    cur.execute(query)
+                    con.commit()
+                    con.close()
+                    messagebox.showinfo("Done", "Student Removed ")
+
+                head_stud_rem_label = Label(op_frame, text="REMOVE STUDENTS", font=op_headings, fg='black', bg="white")
+                head_stud_rem_label.place(x=30, y=50)
+
+                # All Label
+                l1_stud_rem = Label(op_frame, text="ROLL NO", font=style, bg="white", fg="black")
+                l1_stud_rem.place(x=30, y=130)
+
+                # ALL ENTRY
+                e1_stud_rem = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e1_stud_rem.place(x=250, y=130)
+                e1_stud_rem.focus()
+
+                # ALL BUTTONS
+                r_b1 = Button(op_frame, text="REMOVE", font=style, bg="brown", fg="white", width=10,
+                              activebackground='white',
+                              command=confirm_remove_stud)
+                r_b1.place(x=365, y=200)
+
+            # ------------------
+
+            def add_new_book():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                head_new_book_label = Label(op_frame, text="ADD BOOK", font=op_headings, fg='black', bg="white")
+                head_new_book_label.place(x=30, y=50)
+
+                def confirm_book_details():
+                    b_num = e1_new_book.get()
+                    b_name = e2_new_book.get()
+                    b_author = e3_new_book.get()
+                    b_pub = e4_new_book.get()
+
+                    con = sqlite3.connect("Library.db")
+                    query = "insert into Book_Info values({0},'{1}','{2}','{3}')".format(b_num, b_name, b_author, b_pub)
+                    con.execute(query)
+                    con.commit()
+                    con.close()
+                    messagebox.showinfo("Done", "Book Added Successfully")
+
+                def clear():
+                    e1_new_book.delete(0, END)
+                    e2_new_book.delete(0, END)
+                    e3_new_book.delete(0, END)
+                    e4_new_book.delete(0, END)
+                    e1.focus()
+
+                # All Label
+                l1_new_book = Label(op_frame, text="BOOK NUMBER", font=style, bg="white", fg="black")
+                l1_new_book.place(x=30, y=130)
+                l2_new_book = Label(op_frame, text="BOOK NAME", font=style, bg="white", fg="black")
+                l2_new_book.place(x=30, y=200)
+                l3_new_book = Label(op_frame, text="BOOK AUTHOR", font=style, bg="white", fg="black")
+                l3_new_book.place(x=30, y=270)
+                l4_new_book = Label(op_frame, text="PUBLICATION", font=style, bg="white", fg="black")
+                l4_new_book.place(x=30, y=340)
+
+                # ALL ENTRY
+                e1_new_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e1_new_book.place(x=250, y=130)
+                e1_new_book.focus()
+                e2_new_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e2_new_book.place(x=250, y=200)
+                e3_new_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e3_new_book.place(x=250, y=270)
+                e4_new_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e4_new_book.place(x=250, y=340)
+
+                # ALL BUTTON
+                b1_new_book = Button(op_frame, text="SAVE", font=style, bg="brown", fg="white", width=10,
+                                     activebackground='white', command=confirm_book_details)
+                b1_new_book.place(x=365, y=410)
+
+                b2_new_book = Button(op_frame, text="CLEAR", font=style, bg="brown", fg="white", width=10,
+                                     activebackground='white', command=clear)
+                b2_new_book.place(x=365, y=480)
+
+            def not_return_book():
+
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                head_rem_label = Label(op_frame, text="NOT RETURN BOOKS", font=op_headings, fg='black', bg="white")
+                head_rem_label.place(x=30, y=50)
+
+                def clear():
+                    for widget in op_frame.winfo_children():
+                        widget.destroy()
+                    head_rem_label = Label(op_frame, text="NOT RETURN BOOKS", font=op_headings, fg='black', bg="white")
+                    head_rem_label.place(x=30, y=50)
+
+                def show_detail():
+                    con = sqlite3.connect("Library.db")
+                    query = f"select Student_Name,Book_Name,Issue_Data from Book_Issue_Detail where Book_Returned ='No' "
+                    cur = con.cursor()
+                    cur.execute(query)
+                    data = cur.fetchall()
+                    if data is None:
+                        messagebox.showinfo("Done", "No Data found")
+                    else:
+                        large = 170
+                        j = 0
+                        k = 1
+                        while j < 3:
+                            detail_label = Label(op_frame,
+                                                 text=f"{k}. Student Name : {data[j][0]} \t Book Name : {data[j][1]} \t Issue "
+                                                      f"Date : {data[j][2]}", bg="white", font=style)
+                            detail_label.place(x=50, y=large)
+                            k = k + 1
+                            large = large + 50
+                            j = j + 1
+
+                show_b1 = Button(op_frame, text="SHOW", font=style_1, width=8, bg="brown", fg="white",
+                                 command=show_detail)
+                show_b1.place(x=30, y=120)
+                clear_b2 = Button(op_frame, text="CLEAR", font=style_1, width=8, bg="brown", fg="white", command=clear)
+                clear_b2.place(x=150, y=120)
+
+            # ------------------
+            def remove_book():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                def confirm_remove_book():
+                    b_num = e1_rem_book.get()
+                    con = sqlite3.connect("Library.db")
+                    cur = con.cursor()
+                    query = f"DELETE FROM Book_Info WHERE  BOOK_NUM = {b_num}"
+                    cur.execute(query)
+                    con.commit()
+                    con.close()
+                    messagebox.showinfo("Done", "Book Removed.")
+
+                head_rem_label = Label(op_frame, text="REMOVE BOOKS", font=op_headings, fg='black', bg="white")
+                head_rem_label.place(x=30, y=50)
+
+                # All Label
+                l1_rem_book = Label(op_frame, text="BOOK NUMBER", font=style, bg="white", fg="black")
+                l1_rem_book.place(x=30, y=130)
+
+                # ALL ENTRY
+                e1_rem_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e1_rem_book.place(x=250, y=130)
+                e1_rem_book.focus()
+
+                # All Button
+                rem_b1 = Button(op_frame, text="REMOVE", font=style, bg="brown", fg="white", width=10,
+                                activebackground='white',
+                                command=confirm_remove_book)
+                rem_b1.place(x=365, y=200)
+
+            # -------------
+            def search_book():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                def confirm_search_book():
+                    b_num = e1_search_book.get()
+                    con = sqlite3.connect("Library.db")
+                    query = f"select BOOK_NAME,BOOK_AUTHOR,PUBLICATON from Book_Info where BOOK_NUM = {b_num}"
+                    cur = con.cursor()
+                    cur.execute(query)
+                    data = cur.fetchone()
+                    if data is None:
+                        messagebox.showinfo("Done", "No Data found")
+                    else:
+                        def clear(event):
+                            detail_l1.destroy()
+                            detail_l2.destroy()
+                            detail_l3.destroy()
+                            detail_b1.destroy()
+
+                        detail_l1 = Label(op_frame, text=f"Name : {data[0]}", font=style_1, bg="white")
+                        detail_l1.place(x=750, y=30)
+                        detail_l2 = Label(op_frame, text=f"Author : {data[1]}", font=style_1, bg="white")
+                        detail_l2.place(x=750, y=80)
+                        detail_l3 = Label(op_frame, text=f"Publication : {data[2]}", font=style_1, bg="white")
+                        detail_l3.place(x=750, y=130)
+                        detail_b1 = Button(op_frame, text="OK", width=8, font=style, bg="brown", fg="white")
+                        detail_b1.bind("<Button>", clear)
+                        detail_b1.place(x=850, y=180)
+
+                head_search_book_label = Label(op_frame, text="SEARCH BOOK", font=op_headings, fg='black', bg="white",
+                                               )
+                head_search_book_label.place(x=30, y=50)
+
+                # All Label
+                l1_search_book = Label(op_frame, text="BOOK NUMBER", font=style, bg="white", fg="black")
+                l1_search_book.place(x=30, y=130)
+
+                # ALL ENTRY
+                e1_search_book = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e1_search_book.place(x=250, y=130)
+                e1_search_book.focus()
+
+                # ALL BUTTONS
+                r_search_book = Button(op_frame, text="SEARCH", font=style, bg="brown", fg="white", width=10,
+                                       activebackground='white', command=confirm_search_book)
+                r_search_book.place(x=365, y=200)
+
+            # -------------
+            def search_stud():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                def confirm_search_stud():
+                    roll = e1_search_stud.get()
+                    con = sqlite3.connect("Library.db")
+                    query = f"select Name,Class,Email,Number from Student_Detail where Roll = {roll}"
+                    cur = con.cursor()
+                    cur.execute(query)
+                    data = cur.fetchone()
+                    if data is None:
+                        messagebox.showinfo("Done", "No Data found")
+                    else:
+                        def clear(event):
+                            detail_l1.destroy()
+                            detail_l2.destroy()
+                            detail_l3.destroy()
+                            detail_l4.destroy()
+                            detail_b1.destroy()
+
+                        detail_l1 = Label(op_frame, text=f"Name : {data[0]}", font=style_1, bg="white")
+                        detail_l1.place(x=750, y=30)
+                        detail_l2 = Label(op_frame, text=f"Class : {data[1]}", font=style_1, bg="white")
+                        detail_l2.place(x=750, y=80)
+                        detail_l3 = Label(op_frame, text=f"Email : {data[2]}", font=style_1, bg="white")
+                        detail_l3.place(x=750, y=130)
+                        detail_l4 = Label(op_frame, text=f"Number : {data[3]}", font=style_1, bg="white")
+                        detail_l4.place(x=750, y=180)
+                        detail_b1 = Button(op_frame, text="OK", width=8, font=style, bg="brown", fg="white")
+                        detail_b1.bind("<Button>", clear)
+                        detail_b1.place(x=850, y=230)
+
+                head_search_stud_label = Label(op_frame, text="SEARCH STUDENT", font=op_headings, fg='black',
+                                               bg="white")
+                head_search_stud_label.place(x=30, y=50)
+
+                # All Label
+                l1_search_stud = Label(op_frame, text="ROLL NO", font=style, bg="white", fg="black")
+                l1_search_stud.place(x=30, y=130)
+
+                # ALL ENTRY
+                e1_search_stud = Entry(op_frame, width=20, borderwidth=5, font=style, relief=GROOVE)
+                e1_search_stud.place(x=250, y=130)
+                e1_search_stud.focus()
+
+                # ALL BUTTONS
+                r_search_stud = Button(op_frame, text="SEARCH", font=style, bg="brown", fg="white", width=10,
+                                       activebackground='white', command=confirm_search_stud)
+                r_search_stud.place(x=365, y=200)
+
+            # ----------------
+
+            def remainder():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+                head_rem_label = Label(op_frame, text="REMAINDER", font=op_headings, fg='black', bg="white")
+                head_rem_label.place(x=30, y=50)
+
+                def confirm_remainder():
+                    con = sqlite3.connect("Library.db")
+                    query = f"select Roll_No,Student_Name,Book_Name,Issue_Data from Book_Issue_Detail where Book_Returned ='No'"
+                    cur = con.cursor()
+                    cur.execute(query)
+                    con.commit()
+                    data = cur.fetchall()
+                    print(data)
+                    print(data[0])
+                    if data is None:
+
+                        messagebox.showinfo("Done", "No Data found")
+                    else:
+                        i = 0
+                        while i < data.__len__():
+                            con = sqlite3.connect("Library.db")
+                            query = f"select Number from Student_Detail where Roll ={data[i][0]} "
+                            cur = con.cursor()
+                            cur.execute(query)
+                            con.commit()
+                            data1 = cur.fetchall()
+                            print(data1[0][0])
+                            i = i + 1
+                            if data1 is None:
+                                messagebox.showinfo("Done", "No Data found")
+                            else:
+
+                                account_sid = ' abcd'
+                                auth_token = '1234'
+                                client = Client(account_sid, auth_token)
+
+                                message = client.messages \
+                                    .create(
+                                    body='Please Return the Book. ',
+                                    from_='123456789',
+                                    to=data1[0][0]
+
+                                )
+                                messagebox.showinfo("Done", "ALL MESSAGE SEND...")
+                            i = i + 1
+
+                # ALL BUTTONS
+                rem = Button(op_frame, text="SEND MESSAGE", font=style, bg="brown", fg="white", width=20,
+                             activebackground='white', command=confirm_remainder)
+                rem.place(x=255, y=150)
+
+            def dele1():
+                for widget in op_frame.winfo_children():
+                    widget.destroy()
+
+            b1 = Button(side, text="ISSUE BOOK", font=style, width=22, bg="brown", fg="white", command=issue_book,
+                        )
+            b1.place(x=10, y=10)
+            b2 = Button(side, text="RETURN BOOK", font=style, width=22, bg="brown", fg="white", command=return_book)
+            b2.place(x=10, y=70)
+            b3 = Button(side, text="ADD STUDENT", font=style, width=22, bg="brown", fg="white", command=add_student)
+            b3.place(x=10, y=130)
+            b4 = Button(side, text="REMOVE STUDENT", font=style, width=22, bg="brown", fg="white",
+                        command=remove_student)
+            b4.place(x=10, y=190)
+            b5 = Button(side, text="ADD BOOK", font=style, width=22, bg="brown", fg="white", command=add_new_book)
+            b5.place(x=10, y=250)
+            b6 = Button(side, text=" NOT RETURN BOOK", font=style, width=22, bg="brown", fg="white",
+                        command=not_return_book)
+            b6.place(x=10, y=310)
+            b7 = Button(side, text="REMOVE BOOK", font=style, width=22, bg="brown", fg="white", command=remove_book)
+            b7.place(x=10, y=370)
+            b8 = Button(side, text="SEARCH BOOK", font=style, width=22, bg="brown", fg="white", command=search_book)
+            b8.place(x=10, y=430)
+            b9 = Button(side, text="SEARCH STUDENT", font=style, width=22, bg="brown", fg="white", command=search_stud)
+            b9.place(x=10, y=490)
+            b10 = Button(side, text="RETURN REMAINDER", font=style, width=22, bg="brown", fg="white", command=remainder)
+            b10.place(x=10, y=550)
+            b11 = Button(side, text="CLEAR", font=style, width=22, bg="brown", fg="white", command=dele1)
+            b11.place(x=10, y=610)
+
+            exit_label = Label(header, text="Logout", font=('Comic Sans MS', 14, "underline"), bg="brown", fg="white")
+            exit_label.bind("<Button>", close_of)
+            exit_label.place(x=1200, y=0)
+            base.mainloop()
+
+
+
+
+
+
+# ALL LABELS
+head = Label(f3, text="LOGIN", font=('Algerian', 20, "underline"), bg="white", fg="black")
+head.place(x=250, y=30)
+l1 = Label(f3, text="USER ID", font=style_1, bg="white", fg="black")
+l1.place(x=70, y=100)
+l2 = Label(f3, text="PASSWORD", font=style_1, bg="white", fg="black")
+l2.place(x=70, y=180)
+l3 = Label(f3, text="New User! Sign Up Here.", bg="white", font=('Comic Sans MS', 14, "underline"), fg="brown")
+# l3.bind("<Button>", new_user)
+l3.place(x=50, y=330)
+l4 = Label(f3, text="Forgot Password.", bg="white", font=('Comic Sans MS', 13, "underline"), fg="brown")
+# l4.bind("<Button>", forgot_password)
+l4.place(x=420, y=330)
+
+# ALL ENTRY
+e1 = Entry(f3, width=30, borderwidth=5, font=style_1, relief=GROOVE)
+e1.place(x=250, y=100)
+e1.focus()
+e2 = Entry(f3, width=30, borderwidth=5, font=style_1, relief=GROOVE)
+e2.place(x=250, y=180)
+but_1 = Button(f3, text="SIGN-IN", font=style_1, bg="brown", width=10, activebackground='white',
+               command=lib, fg="white")
+but_1.place(x=150, y=250)
+but_2 = Button(f3, text="RESET", font=style_1, bg="brown", width=10, activebackground='white',
+               command=reset, fg="white")
+but_2.place(x=350, y=250)
+
+exit_label = Label(login, text="EXIT", font=('Comic Sans MS', 14, "underline"), bg="white", fg="brown")
+exit_label.bind("<Button>", close_of)
+exit_label.place(x=1200, y=10)
+login.mainloop()
